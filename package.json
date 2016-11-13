@@ -1,0 +1,21 @@
+{
+  "name": "prime-calculator-deploy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastianhaeni/prime-calculator-deploy.git"
+  },
+  "author": "Sebastian Haeni <haeni.sebastian@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sebastianhaeni/prime-calculator-deploy/issues"
+  },
+  "homepage": "https://github.com/sebastianhaeni/prime-calculator-deploy#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0"
+  }
+}
