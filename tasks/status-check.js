@@ -1,3 +1,4 @@
+const getDroplets = require('../api/get-droplets');
 const remoteSSH = require('../actions/remote-ssh');
 const scaleUp = require('../actions/scale-up');
 const scaleDown = require('../actions/scale-down');
