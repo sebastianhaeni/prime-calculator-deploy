@@ -1,0 +1,3 @@
+module.exports = {
+    API_TOKEN: '00d579e168df10e27efb788c038f6b78d65968ece8c4840218af616391915254'
+};
