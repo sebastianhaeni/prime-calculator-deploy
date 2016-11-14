@@ -2,11 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const childProcess = require('child_process');
+const StringDecoder = require('string_decoder').StringDecoder;
 const getDroplets = require('../api/get-droplets');
 const remoteSSH = require('../actions/remote-ssh');
 const remoteCopy = require('../actions/remote-copy');
 
 const app = express();
+const decoder = new StringDecoder('utf8');
 
 app.use(bodyParser.json());
 
@@ -47,8 +49,6 @@ function display(output) {
     if (typeof  output === 'string') {
         console.log(output);
     } else {
-        output.on('data', function (chunk) {
-            console.log(chunk.toString('utf8'));
-        });
+        console.log(decoder.write(output));
     }
 }
