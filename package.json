@@ -1,7 +1,7 @@
 {
   "name": "prime-calculator-deploy",
   "version": "1.0.0",
-  "description": "",
+  "description": "Deploy and scaling app for prime-calculator",
   "main": "index.js",
   "scripts": {},
   "repository": {
