@@ -15,9 +15,13 @@ app.post('/git', function (req, res) {
     res.send('Thanks GitHub!');
 
     let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
-    console.log(childProcess.execSync('git pull', options));
-    console.log(childProcess.execSync('npm install', options));
-    console.log(childProcess.execSync('npm run build', options));
+    console.log('Executing git pull');
+    let output = childProcess.execSync('git pull', options);
+    display(output);
+    console.log('Executing npm install');
+    childProcess.execSync('npm install', options);
+    console.log('Executing npm run build');
+    childProcess.execSync('npm run build', options);
 
     getDroplets('lamp').then(droplets => droplets.forEach(droplet => {
         let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
@@ -31,10 +35,20 @@ app.post('/git', function (req, res) {
 
         console.log(`Starting apache on ${ip}`);
         remoteSSH('service apache2 start', ip, options);
-    }));
+    })).then(() => console.log('Done deploying'));
 
 });
 
 app.listen(8080, function () {
     console.log('Listening to git push events');
 });
+
+function display(output) {
+    if (typeof  output === 'string') {
+        console.log(output);
+    } else {
+        output.on('data', function (chunk) {
+            console.log(chunk.toString('utf8'));
+        });
+    }
+}
