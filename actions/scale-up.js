@@ -1,6 +1,7 @@
 const path = require('path');
 const config = require('../config');
 const remoteSSH = require('./remote-ssh');
+const remoteCopy = require('./remote-copy');
 const updateHAProxyConfig = require('./update-haproxy-config');
 
 module.exports = function (droplets) {
@@ -14,6 +15,7 @@ module.exports = function (droplets) {
     });
     updateHAProxyConfig(lamps);
 
-    let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
+    let options = {cwd: path.resolve(__dirname, '../stage/')};
+    remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
     remoteSSH('service haproxy restart', config.PROXY.IP, options);
 };
