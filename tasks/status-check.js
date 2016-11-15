@@ -3,6 +3,13 @@ const remoteSSH = require('../actions/remote-ssh');
 const scaleUp = require('../actions/scale-up');
 const scaleDown = require('../actions/scale-down');
 
+const waitBetweenScans = 5000;
+const waitBetweenUpScale = 30000;
+const waitBetweenDownScale = 30000;
+
+let lastScaleUp = 0;
+let lastScaleDown = 0;
+
 function checkStatus() {
     getDroplets('lamp').then(droplets => {
         let totalUsage = droplets.map(droplet => {
@@ -15,12 +22,16 @@ function checkStatus() {
 
         let average = totalUsage / droplets.length;
 
-        if (average > 50) {
+        if (average > 50 && +new Date() - lastScaleUp > waitBetweenUpScale) {
             scaleUp(droplets);
-        } else if (droplets.length > 1 && average < 5) {
-            scaleDown(droplets);
+            lastScaleUp = +new Date();
+        } else {
+            if (droplets.length > 1 && average < 5 && +new Date() - lastScaleDown > waitBetweenDownScale) {
+                scaleDown(droplets);
+                lastScaleDown = +new Date();
+            }
         }
-    }).then(() => setTimeout(checkStatus, 5000));
+    }).then(() => setTimeout(checkStatus, waitBetweenScans));
 }
 
-setTimeout(checkStatus, 5000);
+setTimeout(checkStatus, waitBetweenScans);
