@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.post('/git', function (req, res) {
     res.send('Thanks GitHub!');
 
-    if(!req.body.ref.startsWith('refs/tags/') && req.body.ref !== 'refs/heads/master'){
+    if (req.body.ref !== 'refs/heads/master') {
         return;
     }
 
@@ -42,7 +42,13 @@ app.post('/git', function (req, res) {
 
         log(`Starting apache on ${ip}`);
         remoteSSH('service apache2 start', ip, options);
-    })).then(() => log('Done deploying'));
+    })).then(() => log('Done deploying'))
+        .then(() => {
+            // we wait a bit until we resume daily business
+            return new Promise((resolve) => {
+                setTimeout(resolve, 10000);
+            });
+        });
 
 });
 
