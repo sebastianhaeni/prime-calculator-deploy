@@ -31,7 +31,7 @@ app.post('/git', function (req, res) {
     childProcess.execSync('npm run build', options);
 
     getDroplets('lamp').then(droplets => droplets.forEach(droplet => {
-        let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
+        let ip = droplet.networks.v4.find(network => network.type === 'private').ip_address;
 
         log(`Stopping apache on ${ip}`);
         remoteSSH('service apache2 stop', ip, options);
