@@ -1,3 +1,4 @@
+const log = require('../util/log');
 const getDroplets = require('../api/get-droplets');
 const remoteSSH = require('../actions/remote-ssh');
 const scaleUp = require('../actions/scale-up');
@@ -16,7 +17,7 @@ function checkStatus() {
             let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
             let cpuUsage = remoteSSH(`top -bn 2 -d 2`, ip, {}, ` | grep '^%Cpu' | tail -n 1 | gawk '{print $2+$4+$6}'`);
             cpuUsage = (cpuUsage + '').trim();
-            console.log(`${ip} has a usage of ${cpuUsage}%`);
+            log(`${ip} has a usage of ${cpuUsage}%`);
             return cpuUsage;
         }).reduce((a, b)=>a + b, 0);
 

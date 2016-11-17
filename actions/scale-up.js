@@ -1,11 +1,12 @@
 const path = require('path');
+const log = require('../util/log');
 const config = require('../config');
 const remoteSSH = require('./remote-ssh');
 const remoteCopy = require('./remote-copy');
 const updateHAProxyConfig = require('./update-haproxy-config');
 
 module.exports = function (droplets) {
-    console.log('Scaling up');
+    log('Scaling up');
 
     let lamps = droplets.map(droplet => {
         return {

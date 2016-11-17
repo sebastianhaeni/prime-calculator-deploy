@@ -1,4 +1,5 @@
+const log = require('../util/log');
 
 module.exports = function(droplets){
-    console.log('Scaling down');
+    log('Scaling down');
 };
