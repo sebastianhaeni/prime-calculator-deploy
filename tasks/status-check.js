@@ -19,9 +19,10 @@ function checkStatus() {
                 return 0;
             }
             let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
+            log(`Checking status of ${ip}...`);
             let cpuUsage = remoteSSH(`top -bn 2 -d 2`, ip, {}, ` | grep '^%Cpu' | tail -n 1 | gawk '{print $2+$4+$6}'`);
             cpuUsage = (cpuUsage + '').trim();
-            log(`${ip} has a usage of ${cpuUsage}%`);
+            log(`${ip} has a CPU usage of ${cpuUsage}%`);
             return cpuUsage;
         }).reduce((a, b) => a + b, 0);
 
