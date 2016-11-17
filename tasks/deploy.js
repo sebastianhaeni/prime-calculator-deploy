@@ -11,6 +11,8 @@ const remoteCopy = require('../actions/remote-copy');
 const app = express();
 const decoder = new StringDecoder('utf8');
 
+let statusCheck = null;
+
 app.use(bodyParser.json());
 
 app.post('/git', function (req, res) {
@@ -19,6 +21,8 @@ app.post('/git', function (req, res) {
     if (req.body.ref !== 'refs/heads/master') {
         return;
     }
+
+    statusCheck.disable();
 
     let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
     log('Received an update. Exciting times!');
@@ -42,14 +46,14 @@ app.post('/git', function (req, res) {
 
         log(`Starting apache on ${ip}`);
         remoteSSH('service apache2 start', ip, options);
-    })).then(() => log('Done deploying'))
+    }))
+        .then(() => log('Done deploying'))
         .then(() => {
             // we wait a bit until we resume daily business
             return new Promise((resolve) => {
                 setTimeout(resolve, 10000);
             });
-        });
-
+        }).then(() => statusCheck.enable());
 });
 
 app.listen(8080, function () {
@@ -63,3 +67,7 @@ function display(output) {
         console.log(decoder.write(output));
     }
 }
+
+module.exports = function (check) {
+    statusCheck = check
+};

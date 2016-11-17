@@ -10,29 +10,46 @@ const waitBetweenDownScale = 30000;
 
 let lastScaleUp = 0;
 let lastScaleDown = 0;
+let disableStatusCheck = false;
 
 function checkStatus() {
     getDroplets('lamp').then(droplets => {
         let totalUsage = droplets.map(droplet => {
+            if (disableStatusCheck) {
+                return 0;
+            }
             let ip = droplet.networks.v4.find(network => network.type === 'private').ip_address;
             let cpuUsage = remoteSSH(`top -bn 2 -d 2`, ip, {}, ` | grep '^%Cpu' | tail -n 1 | gawk '{print $2+$4+$6}'`);
             cpuUsage = (cpuUsage + '').trim();
             log(`${ip} has a usage of ${cpuUsage}%`);
             return cpuUsage;
-        }).reduce((a, b)=>a + b, 0);
+        }).reduce((a, b) => a + b, 0);
+
+        if (disableStatusCheck) {
+            return new Promise();
+        }
 
         let average = totalUsage / droplets.length;
 
         if (average > 50 && +new Date() - lastScaleUp > waitBetweenUpScale) {
-            scaleUp(droplets);
             lastScaleUp = +new Date();
+            return scaleUp(droplets);
         } else {
             if (droplets.length > 1 && average < 5 && +new Date() - lastScaleDown > waitBetweenDownScale) {
-                scaleDown(droplets);
                 lastScaleDown = +new Date();
+                return scaleDown(droplets);
             }
         }
     }).then(() => setTimeout(checkStatus, waitBetweenScans));
 }
 
 setTimeout(checkStatus, waitBetweenScans);
+
+module.exports = {
+    disable: function () {
+        disableStatusCheck = true;
+    },
+    enable: function () {
+        disableStatusCheck = false;
+    }
+};
