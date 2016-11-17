@@ -35,7 +35,7 @@ app.post('/git', function (req, res) {
     childProcess.execSync('npm run build', options);
 
     getDroplets('lamp').then(droplets => droplets.forEach(droplet => {
-        let ip = droplet.networks.v4.find(network => network.type === 'private').ip_address;
+        let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
 
         log(`Stopping apache on ${ip}`);
         remoteSSH('service apache2 stop', ip, options);
@@ -48,12 +48,7 @@ app.post('/git', function (req, res) {
         remoteSSH('service apache2 start', ip, options);
     }))
         .then(() => log('Done deploying'))
-        .then(() => {
-            // we wait a bit until we resume daily business
-            return new Promise((resolve) => {
-                setTimeout(resolve, 10000);
-            });
-        }).then(() => statusCheck.enable());
+        .then(() => statusCheck.enable());
 });
 
 app.listen(8080, function () {
