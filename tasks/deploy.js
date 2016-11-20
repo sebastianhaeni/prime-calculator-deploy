@@ -23,19 +23,20 @@ function deploy() {
         let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
 
         log(`Stopping apache on ${ip}`);
-        return remoteSSH('service apache2 stop', ip, options)
-            .then(() => {
-                log(`Copying artifacts to ${ip}`);
-                return remoteCopy('./www/*', '/var/www/html/.', ip, options)
-                    .then(() => {
-                        return remoteCopy('./api/', '/var/www/html/.', ip, options)
-                            .then(() => {
-                                log(`Starting apache on ${ip}`);
-                                return remoteSSH('service apache2 start', ip, options);
-                            });
-                    });
-            });
+        remoteSSH('service apache2 stop', ip, options);
+        setTimeout(() => {
+            log(`Copying artifacts to ${ip}`);
+            remoteCopy('./www/*', '/var/www/html/.', ip, options);
 
+            setTimeout(() => {
+                remoteCopy('./api/', '/var/www/html/.', ip, options);
+                log(`Starting apache on ${ip}`);
+                setTimeout(()=> {
+                    remoteSSH('service apache2 start', ip, options);
+
+                }, 3000);
+            }, 3000);
+        }, 3000);
     })).then(() => log('Done deploying'));
 }
 
