@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const Promise = require('promise');
 const config = require('../config');
 const log = require('../util/log');
 
@@ -26,7 +27,29 @@ function createDroplet(i) {
         })
     }).then(response => response.json())
         .then(json => json.droplet)
-        .catch(error => console.log(error));
+        .then(droplet => {
+            return waitTillItsAlive(droplet);
+        });
+}
+
+function waitTillItsAlive(droplet) {
+    return fetch('https://api.digitalocean.com/v2/droplets/' + droplet.id, {
+        headers: {
+            'Authorization': `Bearer ${config.API_TOKEN}`
+        }
+    })
+        .then(response => response.json())
+        .then(json => json.droplet)
+        .then(droplet => {
+            if (droplet.status !== 'active') {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        waitTillItsAlive(droplet).then(() => resolve(droplet));
+                    }, 5000);
+                });
+            }
+            return droplet;
+        });
 }
 
 module.exports = createDroplet;
