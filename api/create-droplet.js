@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const config = require('../config');
 const log = require('../util/log');
 
-function getDroplet(i) {
+function createDroplet(i) {
     log(`Creating droplet lamp${i}`);
 
     return fetch('https://api.digitalocean.com/v2/droplets', {
@@ -11,7 +11,7 @@ function getDroplet(i) {
             'Authorization': `Bearer ${config.API_TOKEN}`
         },
         body: JSON.stringify({
-            name: 'lamp' + i,
+            name: `lamp${i}`,
             region: 'fra1',
             size: '512mb',
             image: 20947873,
@@ -24,7 +24,8 @@ function getDroplet(i) {
             tags: ['lamp']
         })
     }).then(response => response.json())
-        .then(json => json.droplet);
+        .then(json => json.droplet)
+        .catch(error => console.log(error));
 }
 
-module.exports = getDroplet;
+module.exports = createDroplet;
