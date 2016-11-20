@@ -1,5 +1,3 @@
-const express = require('express');
-const bodyParser = require('body-parser');
 const path = require('path');
 const childProcess = require('child_process');
 const StringDecoder = require('string_decoder').StringDecoder;
@@ -8,22 +6,10 @@ const getDroplets = require('../api/get-droplets');
 const remoteSSH = require('../actions/remote-ssh');
 const remoteCopy = require('../actions/remote-copy');
 
-const app = express();
 const decoder = new StringDecoder('utf8');
 
-let statusCheck = null;
 
-app.use(bodyParser.json());
-
-app.post('/git', function (req, res) {
-    res.send('Thanks GitHub!');
-
-    if (req.body.ref !== 'refs/heads/master') {
-        return;
-    }
-
-    statusCheck.disable();
-
+function deploy(){
     let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
     log('Received an update. Exciting times!');
     log('Executing git pull');
@@ -34,7 +20,7 @@ app.post('/git', function (req, res) {
     log('Executing npm run build');
     childProcess.execSync('npm run build', options);
 
-    getDroplets('lamp').then(droplets => droplets.forEach(droplet => {
+    return getDroplets('lamp').then(droplets => droplets.forEach(droplet => {
         let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
 
         log(`Stopping apache on ${ip}`);
@@ -46,14 +32,8 @@ app.post('/git', function (req, res) {
 
         log(`Starting apache on ${ip}`);
         remoteSSH('service apache2 start', ip, options);
-    }))
-        .then(() => log('Done deploying'))
-        .then(() => statusCheck.enable());
-});
-
-app.listen(8080, function () {
-    console.log('Listening to git push events');
-});
+    })).then(() => log('Done deploying'));
+}
 
 function display(output) {
     if (typeof  output === 'string') {
@@ -63,6 +43,4 @@ function display(output) {
     }
 }
 
-module.exports = function (check) {
-    statusCheck = check
-};
+module.exports = deploy;
