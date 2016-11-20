@@ -8,7 +8,8 @@ function createDroplet(i) {
     return fetch('https://api.digitalocean.com/v2/droplets', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${config.API_TOKEN}`
+            'Authorization': `Bearer ${config.API_TOKEN}`,
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             name: `lamp${i}`,
