@@ -8,6 +8,11 @@ const updateHAProxyConfig = require('./update-haproxy-config');
 module.exports = function (droplets) {
     log('Scaling up');
 
+    // TODO create new lamp with API
+
+    // TODO add it's IP address to known_hosts file
+    // ssh-keyscan -H 138.68.98.58 >> ~/.ssh/known_hosts
+
     let lamps = droplets.map(droplet => {
         return {
             name: droplet.name,

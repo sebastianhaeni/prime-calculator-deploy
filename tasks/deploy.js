@@ -9,16 +9,15 @@ const remoteCopy = require('../actions/remote-copy');
 const decoder = new StringDecoder('utf8');
 
 
-function deploy(){
+function deploy() {
     let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
     log('Received an update. Exciting times!');
     log('Executing git pull');
-    let output = childProcess.execSync('git pull', options);
-    display(output);
+    display(childProcess.execSync('git pull', options));
     log('Executing npm install');
-    childProcess.execSync('npm install', options);
+    display(childProcess.execSync('npm install', options));
     log('Executing npm run build');
-    childProcess.execSync('npm run build', options);
+    display(childProcess.execSync('npm run build', options));
 
     return getDroplets('lamp').then(droplets => droplets.forEach(droplet => {
         let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
