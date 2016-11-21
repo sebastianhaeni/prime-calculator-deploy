@@ -53,12 +53,12 @@ module.exports = function (droplets) {
                         });
 
                         log('Updating haproxy');
-                        return updateHAProxyConfig(lamps).then(() => {
-                            options = {cwd: path.resolve(__dirname, '../stage/')};
-                            remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
-                            remoteSSH('service haproxy restart', config.PROXY.IP, options);
-                            resolve();
-                        });
+                        updateHAProxyConfig(lamps);
+
+                        options = {cwd: path.resolve(__dirname, '../stage/')};
+                        remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
+                        remoteSSH('service haproxy restart', config.PROXY.IP, options);
+                        resolve();
                     }, 20000);
                 });
             });
