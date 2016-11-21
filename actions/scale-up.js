@@ -31,10 +31,11 @@ module.exports = function (droplets) {
                 // add it's IP address to known_hosts file
                 log(`Adding IP address ${ip} to known hosts`);
                 display(childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`));
-                log(`Copying new sources to ${droplet.name}`);
+                log(`Waiting for ${droplet.name} to settle down`);
 
                 return new Promise((resolve) => {
                     setTimeout(() => {
+                        log(`Copying new sources to ${droplet.name}`);
                         let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
                         remoteCopy('./www/*', '/var/www/html/.', ip, options);
                         remoteCopy('./api/', '/var/www/html/.', ip, options);
@@ -46,7 +47,10 @@ module.exports = function (droplets) {
                         });
 
                         // add new born
-                        lamps.push(droplet);
+                        lamps.push({
+                            name: droplet.name,
+                            ip: ip
+                        });
 
                         log('Updating haproxy');
                         updateHAProxyConfig(lamps);
@@ -55,7 +59,7 @@ module.exports = function (droplets) {
                         remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
                         remoteSSH('service haproxy restart', config.PROXY.IP, options);
                         resolve();
-                    }, 10000);
+                    }, 20000);
                 });
             });
     });
