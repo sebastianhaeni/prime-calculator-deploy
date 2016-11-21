@@ -1,12 +1,15 @@
 const path = require('path');
 const childProcess = require('child_process');
 const fetch = require('node-fetch');
+const StringDecoder = require('string_decoder').StringDecoder;
 const log = require('../util/log');
 const config = require('../config');
 const remoteSSH = require('./remote-ssh');
 const remoteCopy = require('./remote-copy');
 const updateHAProxyConfig = require('./update-haproxy-config');
 const createDroplet = require('../api/create-droplet');
+
+const decoder = new StringDecoder('utf8');
 
 module.exports = function (droplets) {
     log('Scaling up');
