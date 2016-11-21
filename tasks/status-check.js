@@ -24,7 +24,8 @@ function checkStatus() {
         }).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
 
         let average = totalUsage / droplets.length;
-        log(`Average CPU usage of ${droplets.length} droplets is ${average}%`);
+        let averageFormatted = Math.round(average * 100) / 100;
+        log(`Average CPU usage of ${droplets.length} droplets is ${averageFormatted}%`);
 
         if (average > 50) {
             return {

@@ -1,7 +1,6 @@
 const path = require('path');
 const childProcess = require('child_process');
 const fetch = require('node-fetch');
-const StringDecoder = require('string_decoder').StringDecoder;
 const Promise = require('promise');
 const log = require('../util/log');
 const config = require('../config');
@@ -9,8 +8,6 @@ const remoteSSH = require('./remote-ssh');
 const remoteCopy = require('./remote-copy');
 const updateHAProxyConfig = require('./update-haproxy-config');
 const createDroplet = require('../api/create-droplet');
-
-const decoder = new StringDecoder('utf8');
 
 module.exports = function (droplets) {
     log('Scaling up');
@@ -30,7 +27,7 @@ module.exports = function (droplets) {
                 var ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
                 // add it's IP address to known_hosts file
                 log(`Adding IP address ${ip} to known hosts`);
-                display(childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`));
+                childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`);
                 log(`Waiting for ${droplet.name} to settle down`);
 
                 return new Promise((resolve) => {
@@ -65,11 +62,3 @@ module.exports = function (droplets) {
             });
     });
 };
-
-function display(output) {
-    if (typeof  output === 'string') {
-        console.log(output);
-    } else {
-        console.log(decoder.write(output));
-    }
-}
