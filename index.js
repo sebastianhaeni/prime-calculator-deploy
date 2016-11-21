@@ -50,6 +50,7 @@ app.post('/git', function (req, res) {
     }
 
     deployScheduled = true;
+    log('Deploy scheduled');
 });
 app.listen(8080, function () {
     log('Listening to git push events');

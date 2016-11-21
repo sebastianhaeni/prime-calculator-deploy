@@ -12,10 +12,11 @@ function checkStatus() {
     return getDroplets('lamp').then(droplets => {
         let totalUsage = droplets.map(droplet => {
             let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
-            log(`Checking status of ${ip}...`);
             let cpuUsage = remoteSSH(`top -bn 2 -d 2`, ip, {}, ` | grep '^%Cpu' | tail -n 1 | gawk '{print $2+$4+$6}'`);
             if (!cpuUsage || cpuUsage.length === 0) {
                 return;
+            } else {
+                log(`Status check on ${ip} failed`);
             }
             cpuUsage = (cpuUsage + '').trim();
             log(`${ip} has a CPU usage of ${cpuUsage}%`);
