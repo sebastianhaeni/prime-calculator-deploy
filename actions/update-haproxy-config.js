@@ -4,7 +4,7 @@ const config = require('../config');
 
 function updateHAProxyConfig(lamps) {
     console.log(lamps);
-    return fs.readFileSync(path.join(__dirname, '../resources/haproxy.template.cfg'), 'utf8', function (err, proxyConfig) {
+    return fs.readFile(path.join(__dirname, '../resources/haproxy.template.cfg'), 'utf8', function (err, proxyConfig) {
         proxyConfig = proxyConfig.replace('${statsPassword}', config.STATS_PASSWORD);
 
         let re = new RegExp('{repeat}([a-zA-Z0-9\\${}:\\W]*){endRepeat}');
