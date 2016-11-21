@@ -18,7 +18,10 @@ module.exports = function (droplets) {
         // add it's IP address to known_hosts file
         let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
         log(`Adding IP address ${ip} to known hosts`);
-        childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`, options);
+        childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`);
+        log(`Copying new sources to ${droplet.name}`);
+        remoteCopy('./www/*', '/var/www/html/.', ip, options);
+        remoteCopy('./api/', '/var/www/html/.', ip, options);
 
         let lamps = droplets.map(droplet => {
             return {

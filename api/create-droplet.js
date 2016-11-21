@@ -51,7 +51,6 @@ function waitTillItsAlive(droplet) {
                 });
             }
             log(`${droplet.name} is booted up`);
-            console.log(droplet);
             return droplet;
         });
 }
