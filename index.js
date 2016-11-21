@@ -8,7 +8,8 @@ const scaleDown = require('./actions/scale-down');
 
 const app = express();
 const cycleGap = 5000;
-const scaleGap = 30000;
+const scaleUpGap = 30000;
+const scaleDownGap = 120000;
 
 let deployScheduled = false;
 let lastScaleChange = 0;
@@ -24,13 +25,12 @@ function doCycle() {
             .then((result) => {
                 if (result.action !== 'IDLE') {
                     let timePassed = (+new Date()) - lastScaleChange;
-                    if (timePassed > scaleGap) {
+                    if (result.action === 'SCALE_UP' && timePassed > scaleUpGap) {
                         lastScaleChange = +new Date();
-                        if (result.action === 'SCALE_UP') {
-                            return scaleUp(result.droplets);
-                        } else if (result.action === 'SCALE_DOWN') {
-                            return scaleDown(result.droplets);
-                        }
+                        return scaleUp(result.droplets);
+                    } else if (result.action === 'SCALE_DOWN' && timePassed > scaleDownGap) {
+                        lastScaleChange = +new Date();
+                        return scaleDown(result.droplets);
                     }
                 }
             }).then((result) => setTimeout(doCycle, cycleGap));
