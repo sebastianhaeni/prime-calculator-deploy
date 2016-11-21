@@ -27,7 +27,7 @@ module.exports = function (droplets) {
                 let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
                 // add it's IP address to known_hosts file
                 log(`Adding IP address ${ip} to known hosts`);
-                console.log(childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`));
+                display(childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`));
                 log(`Copying new sources to ${droplet.name}`);
                 remoteCopy('./www/*', '/var/www/html/.', ip, options);
                 remoteCopy('./api/', '/var/www/html/.', ip, options);
@@ -51,3 +51,11 @@ module.exports = function (droplets) {
             });
     });
 };
+
+function display(output) {
+    if (typeof  output === 'string') {
+        console.log(output);
+    } else {
+        console.log(decoder.write(output));
+    }
+}
