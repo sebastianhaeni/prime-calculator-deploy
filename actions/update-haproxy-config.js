@@ -20,7 +20,7 @@ function updateHAProxyConfig(lamps) {
 
         proxyConfig = proxyConfig.replace(re, servers.join(''));
 
-        fs.writeFileSync(path.join(__dirname, '../stage/haproxy.cfg'), proxyConfig);
+        fs.writeFileSync(path.join(__dirname, '../stage/haproxy.cfg'), proxyConfig, {flag: 'w'});
     });
 }
 
