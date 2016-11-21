@@ -27,7 +27,7 @@ module.exports = function (droplets) {
             .then(response => response.json())
             .then(json => json.droplet)
             .then(droplet => {
-                let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
+                var ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
                 // add it's IP address to known_hosts file
                 log(`Adding IP address ${ip} to known hosts`);
                 display(childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`));

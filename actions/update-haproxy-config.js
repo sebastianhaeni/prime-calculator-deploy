@@ -3,6 +3,7 @@ const path = require('path');
 const config = require('../config');
 
 function updateHAProxyConfig(lamps) {
+    console.log(lamps);
     return fs.readFile(path.join(__dirname, '../resources/haproxy.template.cfg'), 'utf8', function (err, proxyConfig) {
         proxyConfig = proxyConfig.replace('${statsPassword}', config.STATS_PASSWORD);
 
