@@ -50,8 +50,12 @@ function waitTillItsAlive(droplet) {
                     }, 5000);
                 });
             }
-            log(`${droplet.name} is booted up`);
-            return droplet;
+            let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
+            log(`${droplet.name} with IP address ${ip} is booted up`);
+            return {
+                name: droplet.name,
+                ip: ip
+            };
         });
 }
 
