@@ -43,11 +43,11 @@ setTimeout(doCycle, cycleGap);
 
 app.use(bodyParser.json());
 app.post('/git', function (req, res) {
-    res.send('Thanks GitHub!');
-
     if (req.body.ref !== 'refs/heads/master') {
+        res.send('Thanks GitHub! But I don\' think that\'s of my interest');
         return;
     }
+    res.send('Thanks GitHub! I will deploy');
 
     deployScheduled = true;
     log('Deploy scheduled');

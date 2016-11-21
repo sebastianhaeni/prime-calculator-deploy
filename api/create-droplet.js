@@ -41,7 +41,7 @@ function waitTillItsAlive(droplet) {
         .then(response => response.json())
         .then(json => json.droplet)
         .then(droplet => {
-            if (droplet.status !== 'active') {
+            if (droplet.status !== 'active' || droplet.networks.v4.length === 0) {
                 return new Promise((resolve) => {
                     setTimeout(() => {
                         waitTillItsAlive(droplet).then(() => resolve(droplet));
