@@ -21,7 +21,7 @@ function checkStatus() {
             cpuUsage = (cpuUsage + '').trim();
             log(`${ip} has a CPU usage of ${cpuUsage}%`);
             return cpuUsage;
-        }).reduce((a, b) => a + b, 0);
+        }).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
 
         let average = totalUsage / droplets.length;
         log(`Average CPU usage of ${droplets.length} droplets is ${average}%`);
