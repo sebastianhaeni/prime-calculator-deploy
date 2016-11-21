@@ -2,6 +2,7 @@ const path = require('path');
 const childProcess = require('child_process');
 const fetch = require('node-fetch');
 const StringDecoder = require('string_decoder').StringDecoder;
+const Promise = require('promise');
 const log = require('../util/log');
 const config = require('../config');
 const remoteSSH = require('./remote-ssh');
@@ -27,32 +28,35 @@ module.exports = function (droplets) {
             .then(json => json.droplet)
             .then(droplet => {
                 let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
-                let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
                 // add it's IP address to known_hosts file
                 log(`Adding IP address ${ip} to known hosts`);
                 display(childProcess.execSync(`ssh-keyscan -H ${ip} >> ~/.ssh/known_hosts`));
                 log(`Copying new sources to ${droplet.name}`);
-                setTimeout(() => {
-                    remoteCopy('./www/*', '/var/www/html/.', ip, options);
-                    remoteCopy('./api/', '/var/www/html/.', ip, options);
-                }, 10000);
 
-                let lamps = droplets.map(droplet => {
-                    return {
-                        name: droplet.name,
-                        ip: droplet.networks.v4.find(network => network.type === 'public').ip_address
-                    }
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
+                        remoteCopy('./www/*', '/var/www/html/.', ip, options);
+                        remoteCopy('./api/', '/var/www/html/.', ip, options);
+                        let lamps = droplets.map(droplet => {
+                            return {
+                                name: droplet.name,
+                                ip: droplet.networks.v4.find(network => network.type === 'public').ip_address
+                            }
+                        });
+
+                        // add new born
+                        lamps.push(droplet);
+
+                        log('Updating haproxy');
+                        updateHAProxyConfig(lamps);
+
+                        options = {cwd: path.resolve(__dirname, '../stage/')};
+                        remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
+                        remoteSSH('service haproxy restart', config.PROXY.IP, options);
+                        resolve();
+                    }, 10000);
                 });
-
-                // add new born
-                lamps.push(droplet);
-
-                log('Updating haproxy');
-                updateHAProxyConfig(lamps);
-
-                options = {cwd: path.resolve(__dirname, '../stage/')};
-                remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
-                remoteSSH('service haproxy restart', config.PROXY.IP, options);
             });
     });
 };
