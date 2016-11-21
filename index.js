@@ -27,9 +27,9 @@ function doCycle() {
                     if (timePassed > scaleGap) {
                         lastScaleChange = +new Date();
                         if (result.action === 'SCALE_UP') {
-                            scaleUp(result.droplets);
+                            return scaleUp(result.droplets);
                         } else if (result.action === 'SCALE_DOWN') {
-                            scaleDown(result.droplets);
+                            return scaleDown(result.droplets);
                         }
                     }
                 }
