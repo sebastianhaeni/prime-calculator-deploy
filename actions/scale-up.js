@@ -14,6 +14,7 @@ module.exports = function (droplets) {
 
     // create new lamp with API
     return createDroplet(i).then(droplet => {
+        console.log(droplet.networks);
         let options = {cwd: path.resolve(__dirname, '../stage/prime-calculator')};
         // add it's IP address to known_hosts file
         let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
