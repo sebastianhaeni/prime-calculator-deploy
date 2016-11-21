@@ -58,6 +58,7 @@ module.exports = function (droplets) {
                         options = {cwd: path.resolve(__dirname, '../stage/')};
                         remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
                         remoteSSH('service haproxy restart', config.PROXY.IP, options);
+                        log('Done updating haproxy');
                         resolve();
                     }, 20000);
                 });

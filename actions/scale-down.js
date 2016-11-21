@@ -26,12 +26,15 @@ module.exports = function (droplets) {
     let options = {cwd: path.resolve(__dirname, '../stage/')};
     remoteCopy('./haproxy.cfg', '/etc/haproxy/haproxy.cfg', config.PROXY.IP, options);
     remoteSSH('service haproxy restart', config.PROXY.IP, options);
+    log('Done updating haproxy');
 
+    log(`Destroying ${sacrifice.name}. Sorry but you have to go`);
     return fetch('https://api.digitalocean.com/v2/droplets/' + sacrifice.id, {
         method: 'delete',
         headers: {
             'Authorization': `Bearer ${config.API_TOKEN}`
         }
-    });
+    })
+        .then(() => log('Done destroying'));
 
 };
