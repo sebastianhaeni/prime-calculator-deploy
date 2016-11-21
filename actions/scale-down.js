@@ -9,7 +9,7 @@ module.exports = function (droplets) {
     log('Scaling down');
 
     let i = parseInt(Math.max.apply(null, droplets.map(droplet => droplet.name.replace('lamp', ''))));
-    let sacrifice = droplets.find(droplet -> droplet.name === `lamp${i}`);
+    let sacrifice = droplets.find(droplet => droplet.name === `lamp${i}`);
 
     let lamps = droplets
         .filter(droplet => droplet.id !== sacrifice.id)
