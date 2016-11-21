@@ -48,6 +48,8 @@ function waitTillItsAlive(droplet) {
                     }, 5000);
                 });
             }
+            log(`${droplet.name} is booted up`);
+            console.log(droplet);
             return droplet;
         });
 }
