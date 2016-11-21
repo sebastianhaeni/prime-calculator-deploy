@@ -29,10 +29,12 @@ function createDroplet(i) {
         .then(json => json.droplet)
         .then(droplet => {
             return waitTillItsAlive(droplet);
-        });
+        })
+        .catch((err) => console.log(err));
 }
 
 function waitTillItsAlive(droplet) {
+    log(`Waiting for ${droplet.name} to boot up...`);
     return fetch('https://api.digitalocean.com/v2/droplets/' + droplet.id, {
         headers: {
             'Authorization': `Bearer ${config.API_TOKEN}`
