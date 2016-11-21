@@ -25,11 +25,10 @@ function createDroplet(i) {
             volume: [],
             tags: ['lamp']
         })
-    }).then(response => response.json())
+    })
+        .then(response => response.json())
         .then(json => json.droplet)
-        .then(droplet => {
-            return waitTillItsAlive(droplet);
-        })
+        .then(droplet => waitTillItsAlive(droplet))
         .catch((err) => console.log(err));
 }
 
@@ -46,16 +45,12 @@ function waitTillItsAlive(droplet) {
             if (droplet.status !== 'active' || droplet.networks.v4.length === 0) {
                 return new Promise((resolve) => {
                     setTimeout(() => {
-                        waitTillItsAlive(droplet).then(() => resolve(droplet));
+                        waitTillItsAlive(droplet).then(() => resolve(droplet.id));
                     }, 5000);
                 });
             }
             let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
             log(`${droplet.name} with IP address ${ip} is booted up`);
-            return {
-                name: droplet.name,
-                ip: ip
-            };
         });
 }
 
