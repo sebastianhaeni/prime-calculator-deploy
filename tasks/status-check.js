@@ -10,6 +10,7 @@ const ACTIONS = {
 
 function checkStatus() {
     return getDroplets('lamp').then(droplets => {
+        log(`Checking status of droplets`);
         let totalUsage = droplets.map(droplet => {
             let ip = droplet.networks.v4.find(network => network.type === 'public').ip_address;
             let cpuUsage = remoteSSH(`top -bn 2 -d 2`, ip, {}, ` | grep '^%Cpu' | tail -n 1 | gawk '{print $2+$4+$6}'`);
@@ -23,6 +24,7 @@ function checkStatus() {
         }).reduce((a, b) => a + b, 0);
 
         let average = totalUsage / droplets.length;
+        log(`Average CPU usage of ${droplets.length} droplets is ${average}%`);
 
         if (average > 50) {
             return {
