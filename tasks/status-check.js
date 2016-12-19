@@ -25,6 +25,7 @@ function checkStatus() {
 
         let average = totalUsage / droplets.length;
         let averageFormatted = Math.round(average * 100) / 100;
+        averageFormatted = Math.round(averageFormatted * 100) / 100;
         log(`Average CPU usage of ${droplets.length} droplets is ${averageFormatted}%`);
 
         if (average > 50) {
